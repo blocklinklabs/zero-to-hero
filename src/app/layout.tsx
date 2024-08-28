@@ -1,16 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { Poppins } from "next/font/google"
+import { Inter } from 'next/font/google'
 import "./globals.css"
 import Header from "@/components/Header"
 import Sidebar from "@/components/Sidebar"
+import 'leaflet/dist/leaflet.css'
+import { Toaster } from 'react-hot-toast'
 
-const poppins = Poppins({ 
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-})
+const inter = Inter({ subsets: ['latin'] })
 
 export default function RootLayout({
   children,
@@ -21,7 +19,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${poppins.className} bg-gray-50`}>
+      <body className={inter.className}>
         <div className="min-h-screen flex flex-col">
           <Header onMenuClick={() => setSidebarOpen(true)} />
           <div className="flex-1 flex overflow-hidden">
@@ -31,6 +29,7 @@ export default function RootLayout({
             </main>
           </div>
         </div>
+        <Toaster />
       </body>
     </html>
   )
