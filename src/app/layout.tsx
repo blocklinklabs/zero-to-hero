@@ -15,16 +15,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [totalEarnings, setTotalEarnings] = useState(1250.75)
 
   return (
     <html lang="en">
       <body className={inter.className}>
         <div className="min-h-screen flex flex-col">
-          <Header onMenuClick={() => setSidebarOpen(true)} />
-          <div className="flex-1 flex overflow-hidden">
-            <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-white shadow-inner">
+          <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} totalEarnings={totalEarnings} />
+          <div className="flex flex-1">
+            <Sidebar open={sidebarOpen} />
+            <main className={`flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'}`}>
               {children}
             </main>
           </div>
