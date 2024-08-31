@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Inter } from 'next/font/google'
 import "./globals.css"
 import Header from "@/components/Header"
 import Sidebar from "@/components/Sidebar"
 import 'leaflet/dist/leaflet.css'
 import { Toaster } from 'react-hot-toast'
+import { getAvailableRewards, getUserByEmail } from '@/utils/db/actions'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,7 +17,31 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [totalEarnings, setTotalEarnings] = useState(1250.75)
+  const [totalEarnings, setTotalEarnings] = useState(0)
+
+  useEffect(() => {
+    const fetchTotalEarnings = async () => {
+      try {
+        const userEmail = localStorage.getItem('userEmail')
+        if (userEmail) {
+          const user = await getUserByEmail(userEmail)
+          console.log('user from layout', user);
+          
+          if (user) {
+            const availableRewards = await getAvailableRewards(user.id) as any
+            console.log('availableRewards from layout', availableRewards);
+            
+            // const userPoints = availableRewards.find(reward => reward.id === 0)?.cost || 0
+            setTotalEarnings(availableRewards)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching total earnings:', error)
+      }
+    }
+
+    fetchTotalEarnings()
+  }, [])
 
   return (
     <html lang="en">

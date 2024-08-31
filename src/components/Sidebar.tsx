@@ -1,14 +1,15 @@
 import Link from "next/link"
 import { usePathname } from 'next/navigation'
 import { Button } from "@/components/ui/button"
-import { MapPin, Trash, Coins, MessageSquare, Settings, Home } from "lucide-react"
+import { MapPin, Trash, Coins, MessageSquare,Medal, Settings, Home } from "lucide-react"
 
 const sidebarItems = [
   { href: "/", icon: Home, label: "Home" },
   { href: "/report", icon: MapPin, label: "Report Waste" },
   { href: "/collect", icon: Trash, label: "Collect Waste" },
   { href: "/rewards", icon: Coins, label: "Rewards" },
-  { href: "/messages", icon: MessageSquare, label: "Messages" },
+  { href: "/leaderboard", icon: Medal, label: "Leaderboard" },
+  // { href: "/messages", icon: MessageSquare, label: "Messages" },
 ]
 
 interface SidebarProps {
