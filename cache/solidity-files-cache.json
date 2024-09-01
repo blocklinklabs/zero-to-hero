@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/albertmends/Documents/HACKATHON/zero-to-hero/contracts/Zero2Hero.sol": {
-      "lastModificationDate": 1725010642205,
-      "contentHash": "3101cdf8c5a35cdec9545a8358cf98fc",
+      "lastModificationDate": 1725181201298,
+      "contentHash": "2f0a02e0cda3920938c0b835e6007ccf",
       "sourceName": "contracts/Zero2Hero.sol",
       "solcConfig": {
         "version": "0.8.24",
@@ -33,10 +33,13 @@
         "@chainlink/contracts/src/v0.8/functions/v1_0_0/FunctionsClient.sol",
         "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol",
         "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol",
-        "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol",
+        "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol",
+        "@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol"
       ],
       "versionPragmas": [
-        "^0.8.24"
+        "^0.8.6"
       ],
       "artifacts": [
         "Zero2Hero"
@@ -639,6 +642,189 @@
       ],
       "artifacts": [
         "FunctionsResponse"
+      ]
+    },
+    "/Users/albertmends/Documents/HACKATHON/zero-to-hero/node_modules/@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol": {
+      "lastModificationDate": 1725009029098,
+      "contentHash": "06f8ab6bd949cea1abd42940d7965d65",
+      "sourceName": "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "VRFConsumerBaseV2"
+      ]
+    },
+    "/Users/albertmends/Documents/HACKATHON/zero-to-hero/node_modules/@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol": {
+      "lastModificationDate": 1725009031157,
+      "contentHash": "c4963e3862ffee2974cc634689745531",
+      "sourceName": "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "VRFCoordinatorV2Interface"
+      ]
+    },
+    "/Users/albertmends/Documents/HACKATHON/zero-to-hero/node_modules/@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol": {
+      "lastModificationDate": 1725009029082,
+      "contentHash": "5e080eff2df83e7d1ec3b981fddeb1ce",
+      "sourceName": "@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./AutomationBase.sol",
+        "./interfaces/AutomationCompatibleInterface.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "AutomationCompatible"
+      ]
+    },
+    "/Users/albertmends/Documents/HACKATHON/zero-to-hero/node_modules/@chainlink/contracts/src/v0.8/automation/AutomationBase.sol": {
+      "lastModificationDate": 1725009029082,
+      "contentHash": "b53171d7e10f5036ecc73fac5d28028b",
+      "sourceName": "@chainlink/contracts/src/v0.8/automation/AutomationBase.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "AutomationBase"
+      ]
+    },
+    "/Users/albertmends/Documents/HACKATHON/zero-to-hero/node_modules/@chainlink/contracts/src/v0.8/automation/interfaces/AutomationCompatibleInterface.sol": {
+      "lastModificationDate": 1725009031123,
+      "contentHash": "5cb8d69e4e9ed7ff601180e31372d0ca",
+      "sourceName": "@chainlink/contracts/src/v0.8/automation/interfaces/AutomationCompatibleInterface.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "AutomationCompatibleInterface"
       ]
     }
   }

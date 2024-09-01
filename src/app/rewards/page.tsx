@@ -1,9 +1,20 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Coins, ArrowUpRight, ArrowDownRight, Gift, AlertCircle, Loader } from 'lucide-react'
+import { Coins, ArrowUpRight, ArrowDownRight, Gift, AlertCircle, Loader, Wallet, Trophy, DollarSign, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { getUserByEmail, getRewardTransactions, getAvailableRewards, redeemReward } from '@/utils/db/actions'
+import { getUserByEmail, getRewardTransactions, getAvailableRewards, redeemReward, createTransaction } from '@/utils/db/actions'
 import { toast } from 'react-hot-toast'
+import { 
+  connectWallet, 
+  getTokenBalance, 
+  getLatestETHPrice, 
+  getStoredUSDValue,
+  isEligibleForReward,
+  calculateDynamicReward,
+  getLastWinner,
+  mintRWT
+} from '@/utils/contractInteraction';
+import { ethers } from 'ethers';
 
 type Transaction = {
   id: number
@@ -17,7 +28,7 @@ type Reward = {
   id: number
   name: string
   cost: number
-  description: string
+  description: string | null
   collectionInfo: string
 }
 
@@ -27,6 +38,16 @@ export default function RewardsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [rewards, setRewards] = useState<Reward[]>([])
   const [loading, setLoading] = useState(true)
+  const [walletAddress, setWalletAddress] = useState<string | null>(null)
+  const [tokenBalance, setTokenBalance] = useState<string | null>(null)
+  const [ethPrice, setEthPrice] = useState<string | null>(null);
+  const [usdValue, setUsdValue] = useState<string | null>(null);
+  const [rwtAmount, setRwtAmount] = useState<string>('');
+  const [usdEquivalent, setUsdEquivalent] = useState<string | null>(null);
+  const [rwtConversionRate, setRwtConversionRate] = useState<number>(0.01); // Example: 1 RWT = 0.1 USD
+  const [isEligible, setIsEligible] = useState<boolean>(false);
+  const [dynamicReward, setDynamicReward] = useState<string | null>(null);
+  const [lastWinner, setLastWinner] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserDataAndRewards = async () => {
@@ -38,10 +59,9 @@ export default function RewardsPage() {
           if (fetchedUser) {
             setUser(fetchedUser)
             const fetchedTransactions = await getRewardTransactions(fetchedUser.id)
-            setTransactions(fetchedTransactions)
+            setTransactions(fetchedTransactions as Transaction[])
             const fetchedRewards = await getAvailableRewards(fetchedUser.id)
-            setRewards(fetchedRewards)
-            // Calculate balance from transactions
+            setRewards(fetchedRewards.filter(r => r.cost > 0)) // Filter out rewards with 0 points
             const calculatedBalance = fetchedTransactions.reduce((acc, transaction) => {
               return transaction.type.startsWith('earned') ? acc + transaction.amount : acc - transaction.amount
             }, 0)
@@ -60,8 +80,72 @@ export default function RewardsPage() {
       }
     }
 
+    const fetchPrices = async () => {
+      try {
+        const ethPriceValue = await getLatestETHPrice();
+        setEthPrice(ethPriceValue);
+
+        const usdStoredValue = await getStoredUSDValue();
+        setUsdValue(usdStoredValue);
+      } catch (error) {
+        console.error('Error fetching prices:', error);
+        toast.error('Failed to fetch price information.');
+      }
+    };
+
     fetchUserDataAndRewards()
-  }, [])
+    fetchPrices()
+
+    // If wallet is already connected, fetch additional data
+    if (walletAddress) {
+      fetchAdditionalData(walletAddress);
+    }
+  }, [walletAddress])
+
+  useEffect(() => {
+    const fetchTokenBalance = async () => {
+      if (walletAddress) {
+        const balance = await getTokenBalance(walletAddress);
+        setTokenBalance(balance);
+      }
+    }
+
+    fetchTokenBalance();
+  }, [walletAddress]);
+
+  const handleConnectWallet = async () => {
+    try {
+      const address = await connectWallet();
+      setWalletAddress(address);
+      toast.success('Wallet connected successfully!');
+      
+      // Fetch token balance after connecting wallet
+      const balance = await getTokenBalance(address);
+      setTokenBalance(balance);
+
+      // Fetch additional data
+      fetchAdditionalData(address);
+    } catch (error) {
+      console.error('Error connecting wallet:', error);
+      toast.error('Failed to connect wallet. Please try again.');
+    }
+  };
+
+  const fetchAdditionalData = async (address: string) => {
+    try {
+      const eligible = await isEligibleForReward(address);
+      setIsEligible(eligible);
+
+      const dynamicRewardAmount = await calculateDynamicReward(ethers.utils.parseUnits('100', 18)); // Example: 100 tokens
+      setDynamicReward(dynamicRewardAmount);
+
+      const winner = await getLastWinner();
+      setLastWinner(winner);
+    } catch (error) {
+      console.error('Error fetching additional data:', error);
+      toast.error('Failed to fetch some reward information.');
+    }
+  };
 
   const handleRedeemReward = async (rewardId: number) => {
     if (!user) {
@@ -69,25 +153,25 @@ export default function RewardsPage() {
       return
     }
 
+    if (!walletAddress) {
+      toast.error('Please connect your wallet first.')
+      return
+    }
+
     const reward = rewards.find(r => r.id === rewardId)
     if (reward && balance >= reward.cost) {
       try {
-        await redeemReward(user.id, rewardId)
+        // Convert points to RWT tokens
+        await mintRWT(walletAddress, reward.cost.toString());
+
+        // Update database
+        await redeemReward(user.id, rewardId);
         
+        // Create a new transaction record
+        await createTransaction(user.id, 'redeemed', reward.cost, `Redeemed ${reward.name}`);
+
         // Refresh user data and rewards after redemption
-        const fetchedUser = await getUserByEmail(user.email)
-        if (fetchedUser) {
-          const fetchedTransactions = await getRewardTransactions(fetchedUser.id)
-          setTransactions(fetchedTransactions)
-          const fetchedRewards = await getAvailableRewards(fetchedUser.id)
-          setRewards(fetchedRewards)
-          
-          // Recalculate balance
-          const calculatedBalance = fetchedTransactions.reduce((acc, transaction) => {
-            return transaction.type.startsWith('earned') ? acc + transaction.amount : acc - transaction.amount
-          }, 0)
-          setBalance(calculatedBalance)
-        }
+        await refreshUserData();
 
         toast.success(`You have successfully redeemed: ${reward.name}`)
       } catch (error) {
@@ -101,35 +185,62 @@ export default function RewardsPage() {
 
   const handleRedeemAllPoints = async () => {
     if (!user) {
-      toast.error('Please log in to redeem points.')
-      return
+      toast.error('Please log in to redeem points.');
+      return;
+    }
+
+    if (!walletAddress) {
+      toast.error('Please connect your wallet first.');
+      return;
     }
 
     try {
-      // Assuming we have a function to redeem all points
-      await redeemReward(user.id, 0) // Use 0 as a special ID for redeeming all points
+      // Convert all points to RWT tokens
+      await mintRWT(walletAddress, balance.toString());
+
+      // Update database
+      await redeemReward(user.id, 0);
       
+      // Create a new transaction record
+      await createTransaction(user.id, 'redeemed', balance, 'Redeemed all points');
+
       // Refresh user data and rewards after redemption
-      const fetchedUser = await getUserByEmail(user.email)
+      await refreshUserData();
+
+      toast.success(`You have successfully redeemed all your points!`);
+    } catch (error) {
+      console.error('Error redeeming all points:', error);
+      toast.error('Failed to redeem all points. Please try again.');
+    }
+  }
+
+  const refreshUserData = async () => {
+    if (user) {
+      const fetchedUser = await getUserByEmail(user.email);
       if (fetchedUser) {
-        const fetchedTransactions = await getRewardTransactions(fetchedUser.id)
-        setTransactions(fetchedTransactions)
-        const fetchedRewards = await getAvailableRewards(fetchedUser.id)
-        setRewards(fetchedRewards)
+        const fetchedTransactions = await getRewardTransactions(fetchedUser.id);
+        setTransactions(fetchedTransactions as Transaction[]);
+        const fetchedRewards = await getAvailableRewards(fetchedUser.id);
+        setRewards(fetchedRewards.filter(r => r.cost > 0)); // Filter out rewards with 0 points
         
         // Recalculate balance
         const calculatedBalance = fetchedTransactions.reduce((acc, transaction) => {
           return transaction.type.startsWith('earned') ? acc + transaction.amount : acc - transaction.amount
         }, 0)
         setBalance(calculatedBalance)
-      }
 
-      toast.success(`You have successfully redeemed all your points!`)
-    } catch (error) {
-      console.error('Error redeeming all points:', error)
-      toast.error('Failed to redeem all points. Please try again.')
+        // Update token balance
+        if (walletAddress) {
+          const newTokenBalance = await getTokenBalance(walletAddress);
+          setTokenBalance(newTokenBalance);
+        }
+      }
     }
   }
+
+  const convertRWTtoUSD = (rwtAmount: number): string | null => {
+    return (rwtAmount * rwtConversionRate).toFixed(2);
+  };
 
   if (loading) {
     return <div className="flex justify-center items-center h-64">
@@ -137,15 +248,89 @@ export default function RewardsPage() {
   </div>
   }
 
+  const balanceInUSD = convertRWTtoUSD(balance);
+  const tokenBalanceInUSD = tokenBalance ? convertRWTtoUSD(parseFloat(tokenBalance)) : null;
+
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold mb-6 text-gray-800">Rewards</h1>
       
-      <div className="bg-green-500 text-white p-6 rounded-xl shadow-lg mb-8">
-        <h2 className="text-xl font-semibold mb-2">Current Balance</h2>
-        <div className="flex items-center">
-          <Coins className="w-8 h-8 mr-2" />
-          <span className="text-4xl font-bold">{balance}</span>
+      <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col justify-between h-full border-l-4 border-blue-500">
+          <div>
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Wallet</h2>
+            {!walletAddress ? (
+              <Button onClick={handleConnectWallet} className="bg-blue-500 text-white hover:bg-blue-600 transition duration-300 w-full">
+                Connect Wallet
+              </Button>
+            ) : (
+              <>
+                <div className="flex items-center mb-3 bg-gray-100 p-2 rounded">
+                  <Wallet className="w-5 h-5 mr-2 text-blue-500" />
+                  <span className="text-sm font-medium text-gray-600 truncate">{walletAddress}</span>
+                </div>
+                {tokenBalance !== null && (
+                  <div className="mt-4">
+                    <p className="text-3xl font-bold mb-1 text-blue-500">{tokenBalance} RWT</p>
+                    <p className="text-sm text-gray-500">Reward Token Balance</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col justify-between h-full border-l-4 border-green-500">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Reward Balance</h2>
+          <div className="flex items-center justify-between mt-auto">
+            <div className="flex items-center">
+              <Coins className="w-10 h-10 mr-3 text-green-500" />
+              <div>
+                <span className="text-4xl font-bold text-green-500">{balance}</span>
+                <p className="text-sm text-gray-500">Available Points</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
+        <h2 className="text-2xl font-semibold mb-6 text-gray-800">Reward Information</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 p-4 rounded-lg flex items-start">
+            <Trophy className="w-6 h-6 text-yellow-500 mr-3 mt-1" />
+            <div>
+              <p className="font-medium text-gray-600 mb-2">Eligible for Reward:</p>
+              <p className={`text-lg font-semibold ${isEligible ? 'text-green-500' : 'text-red-500'}`}>
+                {isEligible ? 'Yes' : 'No'}
+              </p>
+            </div>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg flex items-start">
+            <Gift className="w-6 h-6 text-blue-500 mr-3 mt-1" />
+            <div>
+              <p className="font-medium text-gray-600 mb-2">Dynamic Reward (100 tokens):</p>
+              <p className="text-lg font-semibold text-blue-500">{dynamicReward || 'N/A'} RWT</p>
+            </div>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg flex items-start">
+            <DollarSign className="w-6 h-6 text-green-500 mr-3 mt-1" />
+            <div>
+              <p className="font-medium text-gray-600 mb-2">Latest ETH Price:</p>
+              <p className="text-lg font-semibold text-purple-500">${ethPrice || 'N/A'}</p>
+            </div>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg flex items-start">
+            <User className="w-6 h-6 text-orange-500 mr-3 mt-1" />
+            <div>
+              <p className="font-medium text-gray-600 mb-2">Last Lottery Winner:</p>
+              <p className="text-lg font-semibold text-orange-500 truncate">
+                {lastWinner && lastWinner !== '0x0000000000000000000000000000000000000000'
+                  ? lastWinner
+                  : 'No winner yet'}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
