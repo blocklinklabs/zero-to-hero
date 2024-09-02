@@ -8,6 +8,7 @@ import Sidebar from "@/components/Sidebar"
 import 'leaflet/dist/leaflet.css'
 import { Toaster } from 'react-hot-toast'
 import { getAvailableRewards, getUserByEmail } from '@/utils/db/actions'
+import CreateSchemas from "@/components/createSchemas"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -50,6 +51,7 @@ export default function RootLayout({
           <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} totalEarnings={totalEarnings} />
           <div className="flex flex-1">
             <Sidebar open={sidebarOpen} />
+            {/* <CreateSchemas/> */}
             <main className="flex-1 p-4 lg:p-8 ml-0 lg:ml-64 transition-all duration-300">
               {children}
             </main>

@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import Zero2HeroABI from './Zero2Hero.json'; // Make sure to have your ABI file
+import { createRewardEligibilityAttestation, createDynamicRewardAttestation } from './signAttestations';
 
 declare global {
   interface Window {
@@ -31,6 +32,9 @@ export const claimReward = async (amount: string) => {
       throw new Error("User is not eligible for reward");
     }
 
+    // Create attestation for reward eligibility
+    await createRewardEligibilityAttestation(signer, true);
+
     // Check user's balance
     const balance = await contract.balanceOf(signer);
     const amountBN = ethers.utils.parseUnits(amount, 18);
@@ -46,6 +50,11 @@ export const claimReward = async (amount: string) => {
 
     const tx = await contract.claimReward(amountBN, { gasLimit });
     await tx.wait();
+
+    // Create attestation for dynamic reward
+    const adjustedAmount = await contract.calculateDynamicReward(amountBN);
+    await createDynamicRewardAttestation(signer, amount, ethers.utils.formatUnits(adjustedAmount, 18));
+
     return true;
   } catch (error) {
     console.error('Error claiming reward:', error);

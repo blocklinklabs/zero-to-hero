@@ -14,6 +14,7 @@ import {
   getLastWinner,
   mintRWT
 } from '@/utils/contractInteraction';
+import { createUserActivityAttestation } from '@/utils/signAttestations';
 import { ethers } from 'ethers';
 
 type Transaction = {
@@ -170,6 +171,9 @@ export default function RewardsPage() {
         // Create a new transaction record
         await createTransaction(user.id, 'redeemed', reward.cost, `Redeemed ${reward.name}`);
 
+        // Create attestation for user activity
+        await createUserActivityAttestation(walletAddress, 'Redeem Reward', `Redeemed ${reward.name}`);
+
         // Refresh user data and rewards after redemption
         await refreshUserData();
 
@@ -203,6 +207,9 @@ export default function RewardsPage() {
       
       // Create a new transaction record
       await createTransaction(user.id, 'redeemed', balance, 'Redeemed all points');
+
+      // Create attestation for user activity
+      await createUserActivityAttestation(walletAddress, 'Redeem All Points', 'Redeemed all points');
 
       // Refresh user data and rewards after redemption
       await refreshUserData();

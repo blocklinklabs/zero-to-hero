@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Zero2Hero - Waste Management
 
-## Getting Started
+Zero2Hero is an innovative waste management and community engagement platform built on blockchain technology. It incentivizes users to report and collect waste while providing a gamified experience with rewards and a lottery system.
 
-First, run the development server:
+## Table of Contents
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. [Technologies Used](#technologies-used)
+2. [Key Features](#key-features)
+3. [How It Works](#how-it-works)
+4. [Project Structure](#project-structure)
+5. [Smart Contract](#smart-contract)
+6. [Frontend](#frontend)
+7. [Backend](#backend)
+8. [Integration of Key Technologies](#integration-of-key-technologies)
+9. [Setup and Installation](#setup-and-installation)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technologies Used
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Next.js
+- React
+- TypeScript
+- Solidity
+- Ethers.js
+- Tailwind CSS
+- Sign Protocol
+- Lit Protocol
+- Chainlink (Price Feed, VRF, and Functions)
+- Web3Auth
+- IPFS
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Key Features
 
-## Learn More
+- Waste reporting and collection
+- Token-based reward system
+- Dynamic reward calculation based on ETH price
+- Weekly lottery for additional rewards
+- User authentication with Web3Auth
+- Encrypted waste data storage using Lit Protocol
+- On-chain attestations using Sign Protocol
+- Real-time ETH price feed using Chainlink
+- Interactive map for waste hotspots
+- User dashboard with notifications and rewards
 
-To learn more about Next.js, take a look at the following resources:
+## How It Works
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Users authenticate using Web3Auth.
+2. Users can report waste locations and quantities through the app.
+3. Reported waste data is encrypted using Lit Protocol and stored on IPFS.
+4. Users earn RWT (Reward Token) for reporting and collecting waste.
+5. The reward amount is dynamically calculated based on the current ETH price (Chainlink Price Feed).
+6. A weekly lottery gives users a chance to win additional rewards.
+7. User activities and rewards are recorded as on-chain attestations using Sign Protocol.
+8. The app provides a dashboard for users to track their rewards, level, and notifications.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+1. Smart Contract (`/contracts`)
+   - `Zero2Hero.sol`: Core smart contract handling token management, rewards, lottery, and Chainlink integrations.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Utils (`/src/utils`)
+   - `Zero2Hero.json`: ABI for the smart contract.
+   - `contractInteraction.ts`: Functions for smart contract interactions.
+   - `litProtocol.ts`: Handles encryption and decryption using Lit Protocol.
+   - `signAttestations.ts`: Creates on-chain attestations using Sign Protocol.
+   - `signSchemas.ts`: Defines schemas for Sign Protocol attestations.
+   - `db/actions.ts`: Handles database operations for user rewards and notifications.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+3. Hooks (`/src/hooks`)
+   - `useMediaQuery.ts`: Custom hook for responsive design.
+   - `useSessionSigs.ts`: Manages Web3Auth sessions and Lit Protocol authentication.
+
+4. Components (`/src/components`)
+   - `ContractInteraction.tsx`: Interface for waste reporting and contract interactions.
+   - `Header.tsx`: Navigation bar with Web3Auth integration.
+   - `Map.tsx`: Interactive map for waste reporting and hotspot visualization.
+   - `Sidebar.tsx`: Main navigation menu.
+   - `UserDashboard.tsx`: Displays user rewards and notifications.
+   - `createSchemas.tsx`: Component to create Sign Protocol schemas.
+
+5. Scripts (`/src/scripts`)
+   - `createSchemas.js`: Script to create Sign Protocol schemas programmatically.
+
+## Smart Contract
+
+The `Zero2Hero.sol` contract is the core of the platform, handling:
+- ERC20 token implementation (RWT - Reward Token)
+- Dynamic reward calculation based on ETH price
+- Weekly lottery using Chainlink VRF for randomness
+- Chainlink Price Feed integration for real-time ETH prices
+- Chainlink Functions for external data fetching
+
+## Frontend
+
+Built with Next.js, React, and TypeScript, key components include:
+- `Header.tsx`: Navigation and user authentication
+- `Sidebar.tsx`: Main navigation menu
+- `Map.tsx`: Interactive map for waste reporting and hotspots
+- `ContractInteraction.tsx`: Interface for interacting with the smart contract
+- `UserDashboard.tsx`: Display user rewards and notifications
+
+## Backend
+
+The backend functionality is primarily handled by the smart contract and various utility functions:
+- `contractInteraction.ts`: Functions for interacting with the Zero2Hero contract
+- `litProtocol.ts`: Functions for encrypting and decrypting waste data
+- `signAttestations.ts`: Functions for creating on-chain attestations
+- `signSchemas.ts`: Defines schemas for Sign Protocol attestations
+
+## Integration of Key Technologies
+
+### Sign Protocol
+- Used in `signAttestations.ts` and `signSchemas.ts` to create on-chain attestations for user activities.
+- `createSchemas.tsx` and `createSchemas.js` are used to set up the attestation schemas.
+
+### Lit Protocol
+- Integrated in `litProtocol.ts` for encrypting and decrypting waste data.
+- Used in `Map.tsx` and `ContractInteraction.tsx` for secure data handling.
+- `useSessionSigs.ts` hook manages Lit Protocol authentication.
+
+### Chainlink
+- Price Feed: Used in `Zero2Hero.sol` to get real-time ETH prices for dynamic reward calculation.
+- VRF (Verifiable Random Function): Implemented in `Zero2Hero.sol` for the lottery system.
+- Functions: Integrated in `Zero2Hero.sol` for external data fetching.
+
+### Web3Auth
+- Implemented in `Header.tsx` for user authentication.
+- `useSessionSigs.ts` hook manages Web3Auth sessions.
+
+### IPFS
+- Used in `litProtocol.ts` for storing encrypted waste data.
+

@@ -12,8 +12,10 @@
   },
   "dependencies": {
     "@chainlink/contracts": "^1.2.0",
+    "@ethsign/sp-sdk": "^0.7.2",
     "@google/generative-ai": "^0.17.1",
     "@layerzerolabs/lz-evm-oapp-v2": "^2.3.39",
+    "@lit-protocol/lit-node-client": "^6.4.10",
     "@neondatabase/serverless": "^0.9.4",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
     "@nomicfoundation/hardhat-ethers": "^3.0.0",
@@ -52,7 +54,8 @@
     "solidity-coverage": "^0.8.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "typechain": "^8.3.0"
+    "typechain": "^8.3.0",
+    "viem": "^2.21.1"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
@@ -67,5 +70,6 @@
   },
   "resolutions": {
     "@openzeppelin/contracts": "^5.0.1"
-  }
+  },
+  "type": "module"
 }

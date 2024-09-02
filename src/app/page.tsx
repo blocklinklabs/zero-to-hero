@@ -94,9 +94,9 @@ export default function Home() {
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         ) : (
-          <Link href="/verify">
+          <Link href="/report">
             <Button className="bg-green-600 hover:bg-green-700 text-white text-lg py-6 px-10 rounded-full font-medium transition-all duration-300 ease-in-out transform hover:scale-105">
-              Verify Waste
+              Report Waste
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
