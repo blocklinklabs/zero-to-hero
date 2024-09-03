@@ -113,7 +113,7 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
         const user = await getUserByEmail(userInfo.email);
         if (user) {
           const userBalance = await getUserBalance(user.id);
-          setBalance(userBalance);
+          setBalance(Math.max(userBalance, 0)); // Ensure balance is never negative
         }
       }
     };
@@ -253,7 +253,9 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
           </DropdownMenu>
           <div className="mr-2 md:mr-4 flex items-center bg-gray-100 rounded-full px-2 md:px-3 py-1">
             <Coins className="h-4 w-4 md:h-5 md:w-5 mr-1 text-green-500" />
-            <span className="font-semibold text-sm md:text-base text-gray-800">{balance.toFixed(2)}</span>
+            <span className="font-semibold text-sm md:text-base text-gray-800">
+              {balance.toFixed(2)}
+            </span>
           </div>
           {!loggedIn ? (
             <Button onClick={login} className="bg-green-600 hover:bg-green-700 text-white text-sm md:text-base">

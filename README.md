@@ -129,3 +129,51 @@ The backend functionality is primarily handled by the smart contract and various
 ### IPFS
 - Used in `litProtocol.ts` for storing encrypted waste data.
 
+## DIMO Integration
+
+Zero2Hero now incorporates DIMO (Decentralized Internet of Mobility) to enhance its waste management capabilities and promote eco-friendly driving habits. This integration aligns with the project's goal of environmental sustainability and community engagement.
+
+### Key Components
+
+1. DIMO API Handler (`src/pages/api/dimo.ts`)
+   - Manages server-side interactions with the DIMO API
+   - Handles authentication and data fetching for user devices, vehicle status, and trip data
+   - Ensures secure communication between the application and DIMO services
+
+2. DIMO API Utility (`src/utils/dimoApi.ts`)
+   - Provides client-side functions to interact with the DIMO API
+   - Includes fallback to dummy data for development and testing purposes
+   - Fetches user devices, vehicle data, and trip information
+
+3. DIMO Eco Score Component (`src/components/DimoEcoScore.tsx`)
+   - Calculates and displays an eco-score based on DIMO data
+   - Considers fuel efficiency and eco-friendly trips
+   - Encourages users to adopt more sustainable driving habits
+
+4. DIMO Vehicle Data Component (`src/components/DimoVehicleData.tsx`)
+   - Displays detailed vehicle information from DIMO
+   - Provides users with insights into their vehicle's status and performance
+
+### Importance and Relation to Zero2Hero
+
+1. Environmental Impact Tracking:
+   - The DIMO integration allows users to monitor their vehicle's environmental impact
+   - Eco scores incentivize users to adopt more sustainable driving habits, aligning with Zero2Hero's waste reduction goals
+
+2. Community Engagement:
+   - By incorporating vehicle data, Zero2Hero expands its scope beyond waste management
+   - Users can see how their driving habits contribute to overall environmental efforts
+
+3. Data-Driven Insights:
+   - DIMO data can be used to correlate driving patterns with waste generation and collection activities
+   - This information can help optimize waste collection routes and schedules
+
+4. Gamification and Rewards:
+   - The eco-score system adds another dimension to the app's gamification strategy
+   - Users can earn additional rewards for maintaining high eco-scores, further encouraging sustainable behaviors
+
+5. Holistic Approach to Sustainability:
+   - By combining waste management with vehicle efficiency tracking, Zero2Hero provides a more comprehensive platform for environmental consciousness
+   - This approach emphasizes that sustainability efforts extend beyond waste management to everyday activities like driving
+
+The DIMO integration enhances Zero2Hero's capabilities, providing users with a more comprehensive tool for managing their environmental impact. It reinforces the project's commitment to sustainability by addressing multiple aspects of users' daily lives and encouraging eco-friendly behaviors across different domains.

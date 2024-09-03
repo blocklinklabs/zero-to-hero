@@ -66,7 +66,7 @@ export default function RewardsPage() {
             const calculatedBalance = fetchedTransactions.reduce((acc, transaction) => {
               return transaction.type.startsWith('earned') ? acc + transaction.amount : acc - transaction.amount
             }, 0)
-            setBalance(calculatedBalance)
+            setBalance(Math.max(calculatedBalance, 0)) // Ensure balance is never negative
           } else {
             toast.error('User not found. Please log in again.')
           }
@@ -162,6 +162,12 @@ export default function RewardsPage() {
     const reward = rewards.find(r => r.id === rewardId)
     if (reward && balance >= reward.cost) {
       try {
+        // Ensure balance is sufficient before proceeding
+        if (balance < reward.cost) {
+          toast.error('Insufficient balance to redeem this reward')
+          return
+        }
+
         // Convert points to RWT tokens
         await mintRWT(walletAddress, reward.cost.toString());
 
@@ -172,7 +178,10 @@ export default function RewardsPage() {
         await createTransaction(user.id, 'redeemed', reward.cost, `Redeemed ${reward.name}`);
 
         // Create attestation for user activity
-        await createUserActivityAttestation(walletAddress, 'Redeem Reward', `Redeemed ${reward.name}`);
+        const attestationResult = await createUserActivityAttestation(walletAddress, 'Redeem Reward', `Redeemed ${reward.name}`);
+        if (attestationResult === null) {
+          console.log('Attestation creation failed, but reward redemption continues.');
+        }
 
         // Refresh user data and rewards after redemption
         await refreshUserData();
@@ -234,7 +243,7 @@ export default function RewardsPage() {
         const calculatedBalance = fetchedTransactions.reduce((acc, transaction) => {
           return transaction.type.startsWith('earned') ? acc + transaction.amount : acc - transaction.amount
         }, 0)
-        setBalance(calculatedBalance)
+        setBalance(Math.max(calculatedBalance, 0)) // Ensure balance is never negative
 
         // Update token balance
         if (walletAddress) {

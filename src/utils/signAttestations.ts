@@ -50,8 +50,9 @@ export const createLotteryWinnerAttestation = async (winner: string, rewardAmoun
   return await client.createAttestation(attestation);
 };
 
+
 export const createUserActivityAttestation = async (user: string, activityType: string, details: string) => {
-  const userActivitySchemaId = "0x9d"; // Replace with your schema ID
+  const userActivitySchemaId = "0x9d"; // Make sure this is your correct schema ID
   const attestation = {
     schemaId: userActivitySchemaId,
     data: {
@@ -62,5 +63,13 @@ export const createUserActivityAttestation = async (user: string, activityType: 
     },
     indexingValue: user
   };
-  return await client.createAttestation(attestation);
+  try {
+    const result = await client.createAttestation(attestation);
+    console.log("User activity attestation created:", result);
+    return result;
+  } catch (error) {
+    console.error("Error creating user activity attestation:", error);
+    // Instead of throwing the error, we'll return null
+    return null;
+  }
 };
