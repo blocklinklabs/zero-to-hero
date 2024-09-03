@@ -282,12 +282,12 @@ export default function RewardsPage() {
             ) : (
               <>
                 <div className="flex items-center mb-3 bg-gray-100 p-2 rounded">
-                  <Wallet className="w-5 h-5 mr-2 text-blue-500" />
+                  <Wallet className="w-5 h-5 mr-2 text-blue-500 flex-shrink-0" />
                   <span className="text-sm font-medium text-gray-600 truncate">{walletAddress}</span>
                 </div>
                 {tokenBalance !== null && (
                   <div className="mt-4">
-                    <p className="text-3xl font-bold mb-1 text-blue-500">{tokenBalance} RWT</p>
+                    <p className="text-3xl font-bold mb-1 text-blue-500">{parseFloat(tokenBalance).toFixed(2)} RWT</p>
                     <p className="text-sm text-gray-500">Reward Token Balance</p>
                   </div>
                 )}
