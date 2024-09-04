@@ -129,7 +129,7 @@ The backend functionality is primarily handled by the smart contract and various
 ### IPFS
 - Used in `litProtocol.ts` for storing encrypted waste data.
 
-## DIMO Integration
+## DIMO 
 
 Zero2Hero now incorporates DIMO (Decentralized Internet of Mobility) to enhance its waste management capabilities and promote eco-friendly driving habits. This integration aligns with the project's goal of environmental sustainability and community engagement.
 
