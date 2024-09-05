@@ -7,13 +7,13 @@ const client = new LitJsSdk.LitNodeClient({
   litNetwork: "datil-dev",
 });
 
-const chain = 'sepolia'; // Changed from 'ethereum' to 'sepolia'
+const chain = 'sepolia';
 
 const accessControlConditions = [
   {
     contractAddress: '',
     standardContractType: '',
-    chain: 'sepolia', // Changed from 'chain' to 'sepolia'
+    chain: 'sepolia',
     method: 'eth_getBalance',
     parameters: [':userAddress', 'latest'],
     returnValueTest: {
@@ -23,15 +23,14 @@ const accessControlConditions = [
   },
 ];
 
-// Initialize IPFS client
-const ipfs = create({ url: 'https://ipfs.infura.io:5001/api/v0' }); // You may need to replace with your IPFS node address
+const ipfs = create({ url: 'https://ipfs.infura.io:5001/api/v0' });
 
 export const encryptWasteData = async (data) => {
   await client.connect();
   const { ciphertext, dataToEncryptHash } = await LitJsSdk.encryptString(
     {
       accessControlConditions,
-      chain, // Use 'chain' instead of 'chainId'
+      chain,
       dataToEncrypt: JSON.stringify(data),
     },
     client
@@ -44,16 +43,12 @@ export const submitEncryptedWasteData = async (encryptedData) => {
   try {
     const { ciphertext, dataToEncryptHash } = encryptedData;
     
-    // Store ciphertext on IPFS
     const ciphertextResult = await ipfs.add(JSON.stringify(ciphertext));
     const ciphertextCID = ciphertextResult.cid.toString();
 
-    // Store dataToEncryptHash on IPFS
     const hashResult = await ipfs.add(JSON.stringify(dataToEncryptHash));
     const hashCID = hashResult.cid.toString();
 
-    // In a real-world scenario, you might want to store these CIDs in a database
-    // along with any metadata (e.g., timestamp, user ID)
     console.log(`Ciphertext stored with CID: ${ciphertextCID}`);
     console.log(`Data hash stored with CID: ${hashCID}`);
 
@@ -72,7 +67,7 @@ export const performDataAnalysis = async (sessionSigs) => {
         ciphertext,
         dataToEncryptHash,
         authSig: null,
-        chain: 'sepolia' // Changed from 'ethereum' to 'sepolia'
+        chain: 'sepolia'
       });
 
       const wasteData = JSON.parse(decryptedData);
@@ -96,8 +91,6 @@ export const performDataAnalysis = async (sessionSigs) => {
   `;
 
   try {
-    // Fetch ciphertext and dataToEncryptHash from IPFS
-    // In a real-world scenario, you'd retrieve the CIDs from your database
     const ciphertextCID = 'your-ciphertext-cid';
     const hashCID = 'your-hash-cid';
 
@@ -161,8 +154,8 @@ export const proposeAndSignInitiative = async (sessionSigs, proposal) => {
     sessionSigs,
     jsParams: {
       proposal,
-      publicKey: '<Your PKP public key>', // Replace with actual PKP public key
-      REQUIRED_SIGNATURES: 3, // Adjust as needed
+      publicKey: '<Your PKP public key>',
+      REQUIRED_SIGNATURES: 3,
     }
   });
 
@@ -170,20 +163,17 @@ export const proposeAndSignInitiative = async (sessionSigs, proposal) => {
 };
 
 function verifyProposal(proposal) {
-  // Basic verification logic
   if (!proposal || typeof proposal !== 'string' || proposal.length < 10) {
     return false;
-  // Implement proposal verification logic
+  }
   return true;
 }
 
 function combineSignatures(signatures) {
-  // Implement signature combination logic
   return signatures.join(',');
 }
 
 async function broadcastTransaction(proposal, combinedSig) {
-  // This is a mock implementation. In a real-world scenario, you'd construct and broadcast an actual transaction
   const mockTx = {
     to: '0x1234567890123456789012345678901234567890',
     data: ethers.utils.toUtf8Bytes(proposal),
@@ -197,5 +187,4 @@ async function broadcastTransaction(proposal, combinedSig) {
   await tx.wait();
 
   return tx.hash;
-}
 }

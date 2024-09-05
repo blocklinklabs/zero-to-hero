@@ -1,14 +1,14 @@
 import { SignProtocolClient, SpMode, EvmChains } from "@ethsign/sp-sdk";
 import { privateKeyToAccount } from "viem/accounts";
 
-const privateKey = "0xe229e040a5adcc3b7c701e6fb3c2fe8d9fc16a39462268aca2ac55b31d6c942b"; // Your private key
+const privateKey = "0xe229e040a5adcc3b7c701e6fb3c2fe8d9fc16a39462268aca2ac55b31d6c942b";
 const client = new SignProtocolClient(SpMode.OnChain, {
   chain: EvmChains.baseSepolia,
   account: privateKeyToAccount(privateKey),
 });
 
 export const createRewardEligibilityAttestation = async (user: string, eligible: boolean) => {
-  const rewardEligibilitySchemaId = "0x9a"; // Replace with your schema ID
+  const rewardEligibilitySchemaId = "0x9a";
   const attestation = {
     schemaId: rewardEligibilitySchemaId,
     data: {
@@ -22,7 +22,7 @@ export const createRewardEligibilityAttestation = async (user: string, eligible:
 };
 
 export const createDynamicRewardAttestation = async (user: string, baseAmount: string, adjustedAmount: string) => {
-  const dynamicRewardSchemaId = "0x9b"; // Replace with your schema ID
+  const dynamicRewardSchemaId = "0x9b";
   const attestation = {
     schemaId: dynamicRewardSchemaId,
     data: {
@@ -37,7 +37,7 @@ export const createDynamicRewardAttestation = async (user: string, baseAmount: s
 };
 
 export const createLotteryWinnerAttestation = async (winner: string, rewardAmount: string) => {
-  const lotteryWinnerSchemaId = "0x9c"; // Replace with your schema ID
+  const lotteryWinnerSchemaId = "0x9c";
   const attestation = {
     schemaId: lotteryWinnerSchemaId,
     data: {
@@ -50,9 +50,8 @@ export const createLotteryWinnerAttestation = async (winner: string, rewardAmoun
   return await client.createAttestation(attestation);
 };
 
-
 export const createUserActivityAttestation = async (user: string, activityType: string, details: string) => {
-  const userActivitySchemaId = "0x9d"; // Make sure this is your correct schema ID
+  const userActivitySchemaId = "0x9d";
   const attestation = {
     schemaId: userActivitySchemaId,
     data: {
@@ -69,7 +68,6 @@ export const createUserActivityAttestation = async (user: string, activityType: 
     return result;
   } catch (error) {
     console.error("Error creating user activity attestation:", error);
-    // Instead of throwing the error, we'll return null
     return null;
   }
 };
