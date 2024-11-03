@@ -42,4 +42,4 @@ module.exports = {
   loggingEnabled: true,
 };
 
-// npx hardhat ignition deploy ./ignition/modules/Lock.js --network BitTorrent
+// npx hardhat ignition deploy ./ignition/modules/Zero2Hero.js --network BitTorrent
